@@ -6,7 +6,7 @@ var port = 8080;
 app.use(express.static(__dirname + "/../client"));
 
 var carData;
-request('http://interview.carlypso.com/listings?offset=0&limit=10', function (err, res, body) {
+request('http://interview.carlypso.com/listings?offset=0&limit=100', function (err, res, body) {
   if(err) {
     console.log('Error requesting data');
   } else {
@@ -25,6 +25,7 @@ Array.prototype.sortCarData = function(params) {
       index++;
     }
     sortKey = params[index];
+
     if(a[sortKey] === undefined && b[sortKey] !== undefined) {
       return 1;
     } else if(a[sortKey] !== undefined && b[sortKey] === undefined) {
