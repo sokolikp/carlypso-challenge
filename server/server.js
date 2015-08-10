@@ -12,29 +12,27 @@ request('http://interview.carlypso.com/listings?offset=0&limit=10', function (er
   } else {
     var data = JSON.parse(body);
     carData = data.value;
-    console.log(carData);
   }
 });
 
-Array.prototype.sortCarData = function(param) {
+Array.prototype.sortCarData = function(params) {
   var numbers = ['year', 'odometer', 'condition', 'price'];
+  var index, sortKey;
 
-  // console.log(this);
-  console.log(numbers.indexOf(param));
   this.sort(function(a,b) {
-    console.log(a[param], b[param]);
-    if(a[param] === undefined && b[param] !== undefined) {
-      console.log('undefined a');
+    index = 0;
+    while(a[params[index]] === b[params[index]] && index < params.length) {
+      index++;
+    }
+    sortKey = params[index];
+    if(a[sortKey] === undefined && b[sortKey] !== undefined) {
       return 1;
-    } else if(a[param] !== undefined && b[param] === undefined) {
-      console.log('undefined b');
+    } else if(a[sortKey] !== undefined && b[sortKey] === undefined) {
       return -1;
-    } else if(numbers.indexOf(param) !== -1) { //sort number fields
-      console.log('numbers compare', b[param]-a[param]);
-      return b[param]-a[param];
-    } else { //sort alphabetic fields
-      console.log('string compare', a[param] < b[param] ? -1 : 1)
-      return a[param] < b[param] ? -1 : 1;
+    } else if(numbers.indexOf(params[index]) !== -1) { //sort number fields
+      return b[sortKey]-a[sortKey];
+    } else { //sort string fields
+      return a[sortKey] < b[sortKey] ? -1 : 1;
     }
   });
 
@@ -42,13 +40,12 @@ Array.prototype.sortCarData = function(param) {
 
 app.get('/sort', function(req, res) {
   console.log('requesting', req.query);
-  var sorted;
+  var params = [];
   var sort = req.query;
   for(var key in sort) {
-    console.log('sorting on', key);
-    // sorted = sortCarData(carData, key);
-    carData.sortCarData(key);
+    params.push(key);
   }
+  carData.sortCarData(params);
   res.send(carData);
 });
 
