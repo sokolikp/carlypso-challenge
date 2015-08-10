@@ -16,73 +16,40 @@ request('http://interview.carlypso.com/listings?offset=0&limit=10', function (er
   }
 });
 
-// var merge = function(left, right, param) {
-//   var result  = [];
-//   var leftIndex = 0, rightIndex = 0;
-//   var leftCompare, rightCompare;
-
-//   while (leftIndex < left.length && rightIndex < right.length){
-//     if(parseInt(left[leftIndex][param])) {
-//       console.log('I am a number');
-//       leftCompare = parseInt(left[leftIndex][param]);
-//       rightCompare = parseInt(right[rightIndex][param]);
-//     } else { //if string or undefined
-//       console.log('I am a string');
-//       leftCompare = left[leftIndex][param];
-//       rightCompare = right[rightIndex][param];
-//     }
-//     if (leftCompare < rightCompare){
-//         result.push(left[leftIndex++]);
-//     } else {
-//         result.push(right[rightIndex++]);
-//     }
-//   }
-//   console.log(result.concat(left.slice(leftIndex)).concat(right.slice(rightIndex)));
-//   console.log('next');
-//   return result.concat(left.slice(leftIndex)).concat(right.slice(rightIndex));
-// };
-
-// var mergeSort = function(collection, param) {
-//   if(collection.length < 2) {
-//       return collection;
-//   }
-//   var middle = Math.floor(collection.length / 2);
-//   var left    = collection.slice(0, middle);
-//   var right   = collection.slice(middle);
-
-//   return merge(mergeSort(left), mergeSort(right), param);
-// };
-
-var sortCarData = function(collection, param) {
+Array.prototype.sortCarData = function(param) {
   var numbers = ['year', 'odometer', 'condition', 'price'];
 
-  var sorted = [];
-  sorted = collection.sort(function(a,b) {
+  // console.log(this);
+  console.log(numbers.indexOf(param));
+  this.sort(function(a,b) {
     console.log(a[param], b[param]);
     if(a[param] === undefined && b[param] !== undefined) {
+      console.log('undefined a');
       return 1;
     } else if(a[param] !== undefined && b[param] === undefined) {
+      console.log('undefined b');
       return -1;
-    } else if(numbers.indexOf(param)) { //number data
+    } else if(numbers.indexOf(param) !== -1) { //sort number fields
+      console.log('numbers compare', b[param]-a[param]);
       return b[param]-a[param];
-    } else {
+    } else { //sort alphabetic fields
+      console.log('string compare', a[param] < b[param] ? -1 : 1)
       return a[param] < b[param] ? -1 : 1;
     }
   });
 
-  return sorted;
 };
 
 app.get('/sort', function(req, res) {
   console.log('requesting', req.query);
-  // res.send(req.query);
   var sorted;
   var sort = req.query;
   for(var key in sort) {
     console.log('sorting on', key);
-    sorted = sortCarData(carData, key);
+    // sorted = sortCarData(carData, key);
+    carData.sortCarData(key);
   }
-  res.send(sorted);
+  res.send(carData);
 });
 
 app.get('/range', function(req, res) {
