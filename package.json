@@ -1,0 +1,11 @@
+{
+  "name": "carlypso-challenge",
+  "version": "0.0.0",
+  "description": "Carlypso challenge app.",
+  "main": "app.js",
+  "author": "Paul Sokolik",
+  "dependencies": {
+    "express": "^4.13.3",
+    "request": "^2.60.0"
+  }
+}
