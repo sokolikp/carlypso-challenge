@@ -6,6 +6,7 @@ var port = 8080;
 app.use(express.static(__dirname + "/../client"));
 
 var carData;
+//use request library to retrieve initial car data. Can request up to 10,000 records
 request('http://interview.carlypso.com/listings?offset=0&limit=100', function (err, res, body) {
   if(err) {
     console.log('Error requesting data');
@@ -16,11 +17,13 @@ request('http://interview.carlypso.com/listings?offset=0&limit=100', function (e
 });
 
 Array.prototype.sortCarData = function(params) {
+  //use this array as baseline to check sorting type (number vs. string)
   var numbers = ['year', 'odometer', 'condition', 'price'];
   var index, sortKey;
 
   this.sort(function(a,b) {
     index = 0;
+    //check whether to delegate to next sorting parameter (if fields are equal)
     while(a[params[index]] === b[params[index]] && index < params.length) {
       index++;
     }
@@ -39,6 +42,7 @@ Array.prototype.sortCarData = function(params) {
 
 };
 
+//REQUEST IN THE FORM: /sort?field1&field2&...
 app.get('/sort', function(req, res) {
   console.log('requesting', req.query);
   var params = [];
@@ -50,6 +54,7 @@ app.get('/sort', function(req, res) {
   res.send(carData);
 });
 
+//REQUEST IN THE FORM: /range?range=low-high
 app.get('/range', function(req, res) {
   var range = req.query.range;
   ranges = range.split('-');
@@ -57,6 +62,7 @@ app.get('/range', function(req, res) {
   ranges[1] = parseInt(ranges[1]);
   var results = [];
 
+  //this is the naive solution in O(n) time
   for(var i=0; i<carData.length; i++) {
     if(carData[i].price >= ranges[0] && carData[i].price <= ranges[1]) {
       results.push(carData[i]);
