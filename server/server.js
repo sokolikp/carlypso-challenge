@@ -5,16 +5,26 @@ var port = 8080;
 
 app.use(express.static(__dirname + "/../client"));
 
-var carData;
+var carData = [];
 //use request library to retrieve initial car data. Can request up to 10,000 records
-request('http://interview.carlypso.com/listings?offset=0&limit=100', function (err, res, body) {
-  if(err) {
-    console.log('Error requesting data');
-  } else {
-    var data = JSON.parse(body);
-    carData = data.value;
-  }
-});
+
+var getData = function(offset) {
+  var requestURL = 'http://interview.carlypso.com/listings?offset=' + offset + '&limit=' + 10000;
+  request(requestURL, function (err, res, body) {
+    if(err) {
+      console.log('Error requesting data');
+    } else {
+      var data = JSON.parse(body);
+      if(data.value.length) {
+        carData = carData.concat(data.value);
+        getData(offset + 10000);
+      }
+      // console.log('complete', carData.length);
+    }
+  });
+};
+
+getData(0);
 
 Array.prototype.sortCarData = function(params) {
   //use this array as baseline to check sorting type (number vs. string)
